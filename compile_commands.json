@@ -1,0 +1,53 @@
+[
+  {
+    "file": "src/main.c",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-mcpu=cortex-m4",
+      "-mthumb",
+      "-mfpu=fpv4-sp-d16",
+      "-mfloat-abi=hard",
+      "-pipe",
+      "-std=c23",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Wdouble-promotion",
+      "-Wconversion",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-fno-common",
+      "-Iinc",
+      "-Og",
+      "-g3",
+      "-c",
+      "src/main.c",
+      "-o",
+      "build/main.o"
+    ],
+    "directory": "/home/szymon/Documents/stm32/bare",
+    "output": "build/main.o"
+  },
+  {
+    "file": "src/startup.s",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-mcpu=cortex-m4",
+      "-mthumb",
+      "-mfpu=fpv4-sp-d16",
+      "-mfloat-abi=hard",
+      "-x",
+      "assembler-with-cpp",
+      "-Og",
+      "-g3",
+      "-c",
+      "src/startup.s",
+      "-o",
+      "build/startup.o"
+    ],
+    "directory": "/home/szymon/Documents/stm32/bare",
+    "output": "build/startup.o"
+  }
+]

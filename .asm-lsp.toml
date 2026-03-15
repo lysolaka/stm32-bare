@@ -1,0 +1,27 @@
+[default_config]
+version = "0.10.1"
+assembler = "gas"
+instruction_set = "arm"
+
+[default_config.opts]
+compiler = "arm-none-eabi-gcc"
+compile_flags_txt = [
+  "-mcpu=cortex-m4",
+  "-mthumb",
+  "-mfpu=fpv4-sp-d16",
+  "-mfloat-abi=hard",
+  "-x assembler-with-cpp",
+  "-Wall",
+  "-Wextra",
+  "-Wpedantic",
+  "-Wdouble-promotion",
+  "-Wconversion",
+  "-ffreestanding",
+  "-fno-builtin",
+  "-ffunction-sections",
+  "-fdata-sections",
+  "-fno-common",
+  "-Iinc",
+]
+diagnostics = true
+default_diagnostics = true
