@@ -47,7 +47,7 @@ else ifeq ($(BUILD),release)
 	EXTRA_FLAGS := -Os
 endif
 
-ARCH_FLAGS := -mcpu=$(CPU) -mthumb -mfpu=$(FPU) -mfloat-abi=$(FLOATABI)
+ARCH_FLAGS := -mcpu=$(CPU) -mthumb -mfpu=$(FPU) -mfloat-abi=$(FLOATABI) -DSTM32F407xx
 
 CFLAGS := $(ARCH_FLAGS)
 CFLAGS += -pipe
@@ -58,6 +58,7 @@ CFLAGS += -ffreestanding -fno-builtin
 CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -fno-common
 CFLAGS += -Iinc
+CFLAGS += -Ivendor/CMSIS/Core/Include -Ivendor/Device/ST/STM32F4/Include
 CFLAGS += $(EXTRA_FLAGS)
 
 ASFLAGS := $(ARCH_FLAGS)
