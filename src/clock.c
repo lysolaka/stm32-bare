@@ -1,4 +1,4 @@
-#include "stm32f4xx.h"
+#include "stm32f407xx.h"
 
 #include "clock.h"
 
@@ -42,7 +42,7 @@ void clock_init() {
   // configure SysTick
   SysTick->LOAD = (uint32_t)(168000 - 1);
   // set SysTick IRQ priority
-  __NVIC_SetPriority(SysTick_IRQn, 0b0111);
+  SCB->SHPR[11] = (0b0111 << 4);
   // reset counter value to 0
   SysTick->VAL = (uint32_t)0;
   // select the source clock to be sysclk, enable the timer and its interrupt

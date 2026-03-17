@@ -1,4 +1,4 @@
-#include "stm32f4xx.h"
+#include "stm32f407xx.h"
 
 #include "clock.h"
 
@@ -35,11 +35,12 @@ void main() {
   // trigger on rising edge
   EXTI->RTSR |= EXTI_RTSR_TR0;
   // set a priority
-  __NVIC_SetPriority(EXTI0_IRQn, 0b0110);
-  // enable exti line 0 interrupt in the nvic
-  __NVIC_EnableIRQ(EXTI0_IRQn);
+  NVIC->IPR[EXTI0_IRQn] = (0b0110 << 4);
+  // enable EXTI line 0 interrupt in the NVIC
+  NVIC->ISER[0] = (1 << 6);
 
-  __enable_irq();
+  // enable interrupts
+  __asm__ volatile ("cpsie i");
 
   for (;;) {
     // clear the output
