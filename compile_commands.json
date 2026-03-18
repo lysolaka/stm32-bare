@@ -68,6 +68,40 @@
     "output": "build/main.o"
   },
   {
+    "file": "src/pwm.c",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-mcpu=cortex-m4",
+      "-mthumb",
+      "-mfpu=fpv4-sp-d16",
+      "-mfloat-abi=hard",
+      "-DSTM32F407xx",
+      "-pipe",
+      "-std=c23",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Wdouble-promotion",
+      "-Wconversion",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-fno-common",
+      "-Iinc",
+      "-Ivendor/CMSIS/Core/Include",
+      "-Ivendor/Device/ST/STM32F4/Include",
+      "-Og",
+      "-g3",
+      "-c",
+      "src/pwm.c",
+      "-o",
+      "build/pwm.o"
+    ],
+    "directory": "/home/szymon/Documents/stm32/bare",
+    "output": "build/pwm.o"
+  },
+  {
     "file": "src/startup.s",
     "arguments": [
       "arm-none-eabi-gcc",

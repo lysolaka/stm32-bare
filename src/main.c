@@ -1,30 +1,35 @@
 #include "stm32f407xx.h"
 
 #include "clock.h"
+#include "pwm.h"
 
-volatile uint32_t pattern = 0b0001;
+const uint16_t sequence[6] = { 0, 200, 400, 600, 800, 1000 };
+volatile uint32_t index = 0;
 
 void EXTI0_IRQHandler() {
   // unpend the interrupt
   EXTI->PR = EXTI_PR_PR0;
-  // advance the pattern
-  pattern = ((pattern << 1) | (pattern >> 3)) & 0xF;
+
+  // increment index
+  index = (index + 1) % 6;
+  // update PWM width
+  TIM4->CCR1 = sequence[index];
+  TIM4->CCR2 = sequence[index];
+  TIM4->CCR3 = sequence[index];
+  TIM4->CCR4 = sequence[index];
 }
 
 void main() {
   // enable FPU
   SCB->CPACR |= (0b11 << 22) | (0b11 << 20);
 
+  // set the system clock
   clock_init();
+  // configure TIM4 for PWM with PD[13..15]
+  pwm_init();
 
-  // enable GPIO{A,D} peripheral clocks
-  RCC->AHB1ENR |= (1 << RCC_AHB1ENR_GPIOAEN_Pos) | (1 << RCC_AHB1ENR_GPIODEN_Pos);
-
-  // set PD12, PD13, PD14, PD15 as outputs
-  GPIOD->MODER |= (0b01 << GPIO_MODER_MODER12_Pos);
-  GPIOD->MODER |= (0b01 << GPIO_MODER_MODER13_Pos);
-  GPIOD->MODER |= (0b01 << GPIO_MODER_MODER14_Pos);
-  GPIOD->MODER |= (0b01 << GPIO_MODER_MODER15_Pos);
+  // enable GPIOA peripheral clock
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
 
   // set PA0 as pull-down input
   GPIOA->PUPDR |= (0b10 << GPIO_PUPDR_PUPD0_Pos);
@@ -39,15 +44,12 @@ void main() {
   // enable EXTI line 0 interrupt in the NVIC
   NVIC->ISER[0] = (1 << 6);
 
+
   // enable interrupts
-  __asm__ volatile ("cpsie i");
+  __asm__ volatile("cpsie i");
 
   for (;;) {
-    // clear the output
-    GPIOD->ODR &= ~(GPIO_ODR_OD12 | GPIO_ODR_OD13 | GPIO_ODR_OD14 | GPIO_ODR_OD15);
-    // set the pattern
-    GPIOD->ODR |= (pattern << GPIO_ODR_OD12_Pos);
     // wait for a button press
-    __WFI();
+    __asm__ volatile("wfi");
   }
 }
