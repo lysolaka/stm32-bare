@@ -5,9 +5,7 @@
 #include "spi.h"
 #include "systick.h"
 
-volatile int16_t x;
-volatile int16_t y;
-volatile int16_t z;
+volatile int16_t x, y, z;
 
 void main() {
   // enable FPU
@@ -21,6 +19,8 @@ void main() {
   pwm_init();
   // configure SPI1 for use with the LIS3DSH sensor
   spi_init();
+  // configure DMA for SPI1
+  spi_dma_init();
 
   // enable interrupts
   __asm__ volatile("cpsie i");
@@ -29,16 +29,20 @@ void main() {
   spi_write(0x20, 0x6F);
   spi_write(0x24, 0x00);
 
-  uint8_t buf[6];
+  // NOTE: static because we need a const address for DMA
+  // read burst with auto-increment
+  static uint8_t tx[7] = {0x28 | 0x80};
+  // data received (1st byte is garbage)
+  static uint8_t rx[7];
 
   for (;;) {
-    for (uint8_t i = 0; i < 6; i++) {
-      buf[i] = spi_read(0x28 + i);
-    }
+    spi_dma_transfer(tx, rx, 7);
 
-    x = (int16_t)((buf[1] << 8) | buf[0]);
-    y = (int16_t)((buf[3] << 8) | buf[2]);
-    z = (int16_t)((buf[5] << 8) | buf[4]);
+    __asm__ volatile("wfi");
+
+    x = (int16_t)((rx[2] << 8) | rx[1]);
+    y = (int16_t)((rx[4] << 8) | rx[3]);
+    z = (int16_t)((rx[6] << 8) | rx[5]);
 
     delay_ms(500);
   }
