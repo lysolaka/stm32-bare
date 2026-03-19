@@ -33,18 +33,22 @@ void pwm_init() {
   TIM4->CCER |= TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E | TIM_CCER_CC4E;
 
   // set output compare
-  TIM4->CCR1 = (uint16_t)0;
-  TIM4->CCR2 = (uint16_t)0;
-  TIM4->CCR3 = (uint16_t)0;
-  TIM4->CCR4 = (uint16_t)0;
+  TIM4->CCR1 = 0;
+  TIM4->CCR2 = 0;
+  TIM4->CCR3 = 0;
+  TIM4->CCR4 = 0;
 
   // enable the timer
   TIM4->CR1 |= TIM_CR1_CEN;
 }
 
-void pwm_set(uint16_t timestamp) {
-  TIM4->CCR1 = timestamp;
-  TIM4->CCR2 = timestamp;
-  TIM4->CCR3 = timestamp;
-  TIM4->CCR4 = timestamp;
+void pwm_set(uint16_t timestamp, uint8_t channel) {
+  // check for a proper channel
+  if (channel > 0 && channel < 5) {
+    // pointer arithmetic to get the proper channel register
+    // the CCR registers are adjacent
+    volatile uint32_t* addr = &TIM4->CCR1 + (channel - 1);
+    // write the timestamp
+    *addr = timestamp;
+  }
 }

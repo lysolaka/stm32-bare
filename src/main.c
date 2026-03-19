@@ -25,6 +25,11 @@ void main() {
   // enable interrupts
   __asm__ volatile("cpsie i");
 
+  pwm_set(200, 1);
+  pwm_set(400, 2);
+  pwm_set(600, 3);
+  pwm_set(800, 4);
+
   // configure the bandwidth and enable axes
   spi_write(0x20, 0x6F);
   spi_write(0x24, 0x00);
@@ -44,6 +49,6 @@ void main() {
     y = (int16_t)((rx[4] << 8) | rx[3]);
     z = (int16_t)((rx[6] << 8) | rx[5]);
 
-    delay_ms(500);
+    delay_ms(10);
   }
 }
