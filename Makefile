@@ -44,7 +44,7 @@ OBJS := $(OBJS:.s=.o)
 ifeq ($(BUILD),debug)
 	EXTRA_FLAGS := -Og -g3
 else ifeq ($(BUILD),release)
-	EXTRA_FLAGS := -Os
+	EXTRA_FLAGS := -Os -g3
 endif
 
 ARCH_FLAGS := -mcpu=$(CPU) -mthumb -mfpu=$(FPU) -mfloat-abi=$(FLOATABI) -DSTM32F407xx
