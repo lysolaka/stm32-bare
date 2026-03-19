@@ -2,22 +2,11 @@
 
 #include "clock.h"
 #include "pwm.h"
+#include "spi.h"
 
-const uint16_t sequence[6] = { 0, 200, 400, 600, 800, 1000 };
-volatile uint32_t index = 0;
-
-void EXTI0_IRQHandler() {
-  // unpend the interrupt
-  EXTI->PR = EXTI_PR_PR0;
-
-  // increment index
-  index = (index + 1) % 6;
-  // update PWM width
-  TIM4->CCR1 = sequence[index];
-  TIM4->CCR2 = sequence[index];
-  TIM4->CCR3 = sequence[index];
-  TIM4->CCR4 = sequence[index];
-}
+volatile int16_t x;
+volatile int16_t y;
+volatile int16_t z;
 
 void main() {
   // enable FPU
@@ -27,29 +16,34 @@ void main() {
   clock_init();
   // configure TIM4 for PWM with PD[13..15]
   pwm_init();
-
-  // enable GPIOA peripheral clock
-  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-
-  // set PA0 as pull-down input
-  GPIOA->PUPDR |= (0b10 << GPIO_PUPDR_PUPD0_Pos);
-  // select PA0 as EXTI0 input (reset value)
-  // SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PA;
-  // unmask EXTI0 interrupt
-  EXTI->IMR |= EXTI_IMR_MR0;
-  // trigger on rising edge
-  EXTI->RTSR |= EXTI_RTSR_TR0;
-  // set a priority
-  NVIC->IPR[EXTI0_IRQn] = (0b0110 << 4);
-  // enable EXTI line 0 interrupt in the NVIC
-  NVIC->ISER[0] = (1 << 6);
-
+  // configure SPI1 for use with the LIS3DSH sensor
+  spi_init();
 
   // enable interrupts
   __asm__ volatile("cpsie i");
 
+  // configure the bandwidth and enable axes
+  spi_write(0x20, 0x6F);
+  spi_write(0x24, 0x00);
+
+  uint8_t id = spi_read(0x0F);
+
+  if (id != 0x3F) {
+    return;
+  }
+
+  uint8_t buf[6];
+
   for (;;) {
-    // wait for a button press
-    __asm__ volatile("wfi");
+
+    for (uint8_t i = 0; i < 6; i++) {
+      buf[i] = spi_read(0x28 + i);
+    }
+
+    x = (int16_t)((buf[1] << 8) | buf[0]);
+    y = (int16_t)((buf[3] << 8) | buf[2]);
+    z = (int16_t)((buf[5] << 8) | buf[4]);
+
+    delay_ms(500);
   }
 }
