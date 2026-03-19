@@ -3,6 +3,7 @@
 #include "clock.h"
 #include "pwm.h"
 #include "spi.h"
+#include "systick.h"
 
 volatile int16_t x;
 volatile int16_t y;
@@ -14,6 +15,8 @@ void main() {
 
   // set the system clock
   clock_init();
+  // initialise the SysTick timer
+  systick_init();
   // configure TIM4 for PWM with PD[13..15]
   pwm_init();
   // configure SPI1 for use with the LIS3DSH sensor
@@ -26,16 +29,9 @@ void main() {
   spi_write(0x20, 0x6F);
   spi_write(0x24, 0x00);
 
-  uint8_t id = spi_read(0x0F);
-
-  if (id != 0x3F) {
-    return;
-  }
-
   uint8_t buf[6];
 
   for (;;) {
-
     for (uint8_t i = 0; i < 6; i++) {
       buf[i] = spi_read(0x28 + i);
     }

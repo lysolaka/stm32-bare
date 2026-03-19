@@ -2,9 +2,6 @@
 
 #include "clock.h"
 
-// counts milliseconds from enabling the SysTick timer
-volatile uint32_t epoch = 0;
-
 void clock_init() {
   // enable HSE
   RCC->CR |= RCC_CR_HSEON;
@@ -38,36 +35,4 @@ void clock_init() {
   // wait for the switch
   while (!(RCC->CFGR & RCC_CFGR_SWS_PLL))
     ;
-
-  // configure SysTick
-  SysTick->LOAD = (uint32_t)(168000 - 1);
-  // set SysTick IRQ priority
-  SCB->SHPR[11] = (0b0111 << 4);
-  // reset counter value to 0
-  SysTick->VAL = (uint32_t)0;
-  // select the source clock to be sysclk, enable the timer and its interrupt
-  SysTick->CTRL |= (1 << SysTick_CTRL_CLKSOURCE_Pos) | (1 << SysTick_CTRL_TICKINT_Pos) |
-                   (1 << SysTick_CTRL_ENABLE_Pos);
-
-  return;
-}
-
-void delay_ms(uint32_t time) {
-  // capture the epoch and calculate the wait time
-  uint32_t start = epoch;
-  uint32_t end = start + time;
-
-  // if overflow wait a little more
-  if (end < start) {
-    while (time > start)
-      ;
-  }
-
-  // wait for the time to come
-  while (epoch < end)
-    ;
-}
-
-void SysTick_Handler() {
-  epoch += 1;
 }
