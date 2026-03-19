@@ -41,3 +41,10 @@ void pwm_init() {
   // enable the timer
   TIM4->CR1 |= TIM_CR1_CEN;
 }
+
+void pwm_set(uint16_t timestamp) {
+  TIM4->CCR1 = timestamp;
+  TIM4->CCR2 = timestamp;
+  TIM4->CCR3 = timestamp;
+  TIM4->CCR4 = timestamp;
+}
