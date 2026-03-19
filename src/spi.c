@@ -36,18 +36,17 @@ void spi_init() {
 uint8_t spi_transaction(uint8_t addr, uint8_t tx) {
   // assert chip select (active low)
   GPIOE->BSRR = GPIO_BSRR_BR3;
-
   // wait for TX to be ready
   while (!(SPI1->SR & SPI_SR_TXE))
     ;
 
   // send an address with the read bit set
   SPI1->DR = addr;
-
-  // wait for reception and discard the result
+  // wait for reception
   while (!(SPI1->SR & SPI_SR_RXNE))
     ;
 
+  // discard the result
   (void)SPI1->DR;
 
   // wait for TX to be ready
@@ -56,14 +55,12 @@ uint8_t spi_transaction(uint8_t addr, uint8_t tx) {
 
   // send out data
   SPI1->DR = tx;
-
   // wait for reception
   while (!(SPI1->SR & SPI_SR_RXNE))
     ;
 
   // store the received data
   uint8_t rx = *((uint8_t*)&SPI1->DR);
-
   // wait for the transaction to finish
   while (SPI1->SR & SPI_SR_BSY)
     ;
