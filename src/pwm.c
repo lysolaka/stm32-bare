@@ -19,9 +19,9 @@ void pwm_init() {
   // enable TIM4 input clock
   RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
 
-  // set the prescaler 84MHz / 84 = 1MHz
-  TIM4->PSC = 84 - 1;
-  // set the counter reload 1MHz / 1000 = 1kHz
+  // set the prescaler 84MHz / 4 = 21MHz
+  TIM4->PSC = 4 - 1;
+  // set the counter reload 21MHz / 1000 = 21kHz
   TIM4->ARR = 1000 - 1;
   // set PWM mode 1 on output channels
   TIM4->CCMR1 |= (0b110 << TIM_CCMR1_OC1M_Pos) | (0b110 << TIM_CCMR1_OC2M_Pos);
