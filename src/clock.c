@@ -6,7 +6,7 @@ void clock_init() {
   // enable HSE
   RCC->CR |= RCC_CR_HSEON;
   // wait for it to start
-  while (!(RCC->CR & RCC_CR_HSERDY_Msk))
+  while (!(RCC->CR & RCC_CR_HSERDY))
     ;
 
   // PLL values:
@@ -24,7 +24,7 @@ void clock_init() {
   // enable PLL
   RCC->CR |= (1 << RCC_CR_PLLON_Pos);
   // wait for it to start
-  while (!(RCC->CR & RCC_CR_PLLRDY_Msk))
+  while (!(RCC->CR & RCC_CR_PLLRDY))
     ;
 
   // configure flash latency
