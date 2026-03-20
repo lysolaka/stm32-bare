@@ -17,7 +17,7 @@ void spi_dma_init();
 
 // Start a DMA transfer for the SPI1.
 // `tx` and `rx` shall be of the same length equal to `len`.
-void spi_dma_transfer(uint8_t* tx, uint8_t* rx, uint16_t len);
+void spi_dma_transfer(uint8_t const* tx, uint8_t* rx, uint16_t len);
 
 // User callback for the DMA transfer completion
 [[ gnu::weak ]]

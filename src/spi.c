@@ -137,7 +137,7 @@ void spi_write(uint8_t addr, uint8_t data) {
   spi_transaction(addr & 0x7F, data);
 }
 
-void spi_dma_transfer(uint8_t* tx, uint8_t* rx, uint16_t len) {
+void spi_dma_transfer(uint8_t const* tx, uint8_t* rx, uint16_t len) {
   // ensure streams are disabled for configuration
   DMA2_Stream0->CR &= ~DMA_SxCR_EN;
   DMA2_Stream3->CR &= ~DMA_SxCR_EN;
