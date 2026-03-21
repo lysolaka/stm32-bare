@@ -6,15 +6,16 @@ void pwm_init() {
   // enable GPIOD peripheral clock
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
 
-  // set PD12, PD13, PD14, PD15 to AF mode
-  GPIOD->MODER |= (0xAAu << 24); // we have to put the 'u' suffix, fuck the C programming language
-                                 // for not making integers cross-platform and not doing type
-                                 // coercion on constant expressions
-                                 // alternatively we do this:
-                                 // GPIOD->MODER |= 0xAA000000;
+  // set PD[12..15] to AF mode
+  // for PD15 we have to put the 'u' suffix since we put a 1 in the MSB, which would change the
+  // sign, fuck the C programming language for not making integers cross-platform and not doing type
+  // coercion on constant expressions
+  GPIOD->MODER |= (0b10 << GPIO_MODER_MODER12_Pos) | (0b10 << GPIO_MODER_MODER13_Pos) |
+                  (0b10 << GPIO_MODER_MODER14_Pos) | (0b10u << GPIO_MODER_MODER15_Pos);
 
   // set them as AF2 (TIM4 output)
-  GPIOD->AFR[1] |= (0x2222 << 16);
+  GPIOD->AFR[1] |= (0b0010 << GPIO_AFRH_AFSEL12_Pos) | (0b0010 << GPIO_AFRH_AFSEL13_Pos) |
+                   (0b0010 << GPIO_AFRH_AFSEL14_Pos) | (0b0010 << GPIO_AFRH_AFSEL15_Pos);
 
   // enable TIM4 input clock
   RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
