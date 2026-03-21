@@ -97,14 +97,14 @@ uint16_t calc_timestamp(int16_t a) {
   if (v > 32767)
     v = 32767;
 
-  // for values above 1g just put the PWM timestamp to the maximum
-  if (v >= 16384)
+  // for values above 1.5g just put the PWM timestamp to the maximum
+  if (v >= 24576)
     return 1000;
 
   // compute the value bin index
-  // equivalent to floorf(v / 1638.4f) using integer arithmetic for 50 discrete bins
-  int32_t bin = (v * 50) / 16384;
+  // equivalent to floorf(v / 2457.6f) using integer arithmetic for 100 discrete bins
+  int32_t bin = (v * 100) / 24576;
 
   // multiply the bin index by the increment value
-  return (uint16_t)(bin * 20);
+  return (uint16_t)(bin * 10);
 }
