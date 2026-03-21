@@ -25,21 +25,21 @@ void EXTI0_IRQHandler() {
   // set the X axis PWM value in a proper direction
   uint16_t xi = calc_timestamp(x);
   if (x < 0) {
-    pwm_set(xi, 1);
-    pwm_set(0, 3);
+    TIM4->CCR1 = xi;
+    TIM4->CCR3 = 0;
   } else {
-    pwm_set(0, 1);
-    pwm_set(xi, 3);
+    TIM4->CCR1 = 0;
+    TIM4->CCR3 = xi;
   }
 
   // same for Y
   uint16_t yi = calc_timestamp(y);
   if (y < 0) {
-    pwm_set(yi, 4);
-    pwm_set(0, 2);
+    TIM4->CCR2 = 0;
+    TIM4->CCR4 = yi;
   } else {
-    pwm_set(0, 4);
-    pwm_set(yi, 2);
+    TIM4->CCR2 = yi;
+    TIM4->CCR4 = 0;
   }
 }
 

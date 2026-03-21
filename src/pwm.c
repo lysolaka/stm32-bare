@@ -42,14 +42,3 @@ void pwm_init() {
   // enable the timer
   TIM4->CR1 |= TIM_CR1_CEN;
 }
-
-void pwm_set(uint16_t timestamp, uint8_t channel) {
-  // check for a proper channel
-  if (channel > 0 && channel < 5) {
-    // pointer arithmetic to get the proper channel register
-    // the CCR registers are adjacent
-    volatile uint32_t* addr = &TIM4->CCR1 + (channel - 1);
-    // write the timestamp
-    *addr = timestamp;
-  }
-}
